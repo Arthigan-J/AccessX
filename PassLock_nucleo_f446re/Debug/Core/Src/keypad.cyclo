@@ -1,0 +1,3 @@
+../Core/Src/keypad.c:37:6:keypad_init	2
+../Core/Src/keypad.c:44:6:keypad_scan	4
+../Core/Src/keypad.c:73:6:keypad_get_key	4

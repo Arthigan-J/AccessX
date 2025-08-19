@@ -1,0 +1,73 @@
+#include "i2c-lcd.h"
+
+extern I2C_HandleTypeDef hi2c1;
+
+static uint8_t backlight_state = LCD_BACKLIGHT; // Default backlight ON
+
+void lcd_send_byte(char data, uint8_t mode) {
+    char high_nibble = data & 0xF0;
+    char low_nibble = (data << 4) & 0xF0;
+    uint8_t data_t[4];
+
+    data_t[0] = high_nibble | mode | backlight_state | ENABLE;
+    data_t[1] = high_nibble | mode | backlight_state;
+    data_t[2] = low_nibble | mode | backlight_state | ENABLE;
+    data_t[3] = low_nibble | mode | backlight_state;
+
+    HAL_I2C_Master_Transmit(&hi2c1, LCD_I2C_ADDR, data_t, 4, HAL_MAX_DELAY);
+    HAL_Delay(1); // Ensure enough delay between commands
+}
+
+void lcd_send_cmd(char cmd) {
+    lcd_send_byte(cmd, 0);
+}
+
+void lcd_send_data(char data) {
+    lcd_send_byte(data, REGISTER_SELECT);
+}
+
+void lcd_clear(void) {
+    lcd_send_cmd(LCD_CLEAR_DISPLAY);
+    HAL_Delay(2);
+}
+
+void lcd_put_cur(int row, int col) {
+    uint8_t address = (row == 0) ? (0x80 + col) : (0xC0 + col);
+    lcd_send_cmd(address);
+}
+
+void lcd_send_string(char *str) {
+    while (*str) {
+        lcd_send_data(*str++);
+    }
+}
+
+void lcd_init(void) {
+    HAL_Delay(50); // Wait for LCD power up
+
+    lcd_send_cmd(0x30);
+    HAL_Delay(5);
+    lcd_send_cmd(0x30);
+    HAL_Delay(1);
+    lcd_send_cmd(0x30);
+    HAL_Delay(10);
+
+    lcd_send_cmd(0x20); // Set to 4-bit mode
+    HAL_Delay(10);
+
+    lcd_send_cmd(LCD_FUNCTION_SET | LCD_4BIT_MODE | LCD_2LINE | LCD_5x8DOTS);
+    lcd_send_cmd(LCD_DISPLAY_CONTROL | LCD_DISPLAY_ON | LCD_CURSOR_OFF | LCD_BLINK_OFF);
+    lcd_send_cmd(LCD_CLEAR_DISPLAY);
+    HAL_Delay(2);
+    lcd_send_cmd(LCD_ENTRY_MODE_SET | LCD_ENTRY_LEFT | LCD_ENTRY_SHIFT_DECREMENT);
+}
+
+void lcd_backlight_on(void) {
+    backlight_state = LCD_BACKLIGHT;
+    lcd_send_cmd(0x00); // Refresh to apply backlight state
+}
+
+void lcd_backlight_off(void) {
+    backlight_state = LCD_NOBACKLIGHT;
+    lcd_send_cmd(0x00); // Refresh to apply backlight state
+}

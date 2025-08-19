@@ -1,0 +1,49 @@
+/*
+ * i2c-lcd.h
+ *
+ *  Created on: Aug 17, 2025
+ *      Author: AJ
+ */
+
+#ifndef INC_I2C_LCD_H_
+#define INC_I2C_LCD_H_
+
+#include "stm32f4xx_hal.h"   // change if using a different STM32 series
+
+// Adjust according to your module address (0x27 or 0x3F usually)
+#define LCD_I2C_ADDR 0x27 << 1
+
+// LCD commands
+#define LCD_CLR             0x01
+#define LCD_HOME            0x02
+#define LCD_ENTRYMODE       0x04
+#define LCD_DISPLAYCTRL     0x08
+#define LCD_CURSORSHIFT     0x10
+#define LCD_FUNCTIONSET     0x20
+#define LCD_SETCGRAMADDR    0x40
+#define LCD_SETDDRAMADDR    0x80
+
+// Modes
+#define LCD_DISPLAYON       0x04
+#define LCD_CURSORON        0x02
+#define LCD_CURSOROFF       0x00
+#define LCD_BLINKON         0x01
+#define LCD_BLINKOFF        0x00
+
+#define LCD_2LINE           0x08
+#define LCD_5x8DOTS         0x00
+#define LCD_4BITMODE        0x00
+
+// Backlight control
+#define LCD_BACKLIGHT       0x08
+#define LCD_NOBACKLIGHT     0x00
+
+// Functions
+void lcd_init(I2C_HandleTypeDef *hi2c);
+void lcd_send_cmd(char cmd);
+void lcd_send_data(char data);
+void lcd_send_string(char *str);
+void lcd_put_cur(uint8_t row, uint8_t col);
+void lcd_clear(void);
+
+#endif /* INC_I2C_LCD_H_ */

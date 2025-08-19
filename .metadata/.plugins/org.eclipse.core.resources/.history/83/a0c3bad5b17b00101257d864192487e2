@@ -1,0 +1,59 @@
+/*
+ * i2c-lcd.h
+ *
+ *  Created on: Aug 17, 2025
+ *      Author: AJ
+ */
+
+#ifndef INC_I2C_LCD_H_
+#define INC_I2C_LCD_H_
+
+#include "stm32f4xx_hal.h"  // Adjust this to your STM32 series
+#include <string.h>
+#include <stdio.h>
+
+// Adjust your I2C handle name if needed
+extern I2C_HandleTypeDef hi2c1;
+
+#define LCD_I2C_ADDR (0x27 << 1) // Replace 0x27 with your LCD's I2C address
+
+// LCD Commands
+#define LCD_CLEAR_DISPLAY        0x01
+#define LCD_RETURN_HOME          0x02
+#define LCD_ENTRY_MODE_SET       0x04
+#define LCD_DISPLAY_CONTROL      0x08
+#define LCD_CURSOR_SHIFT         0x10
+#define LCD_FUNCTION_SET         0x20
+#define LCD_SET_CGRAM_ADDR       0x40
+#define LCD_SET_DDRAM_ADDR       0x80
+
+// Options
+#define LCD_ENTRY_LEFT           0x02
+#define LCD_ENTRY_SHIFT_DECREMENT 0x00
+#define LCD_DISPLAY_ON           0x04
+#define LCD_CURSOR_OFF           0x00
+#define LCD_BLINK_OFF            0x00
+#define LCD_2LINE                0x08
+#define LCD_5x8DOTS              0x00
+#define LCD_4BIT_MODE            0x00
+
+// Control bits
+#define LCD_BACKLIGHT 0x08
+#define LCD_NOBACKLIGHT 0x00
+
+#define ENABLE 0x04
+#define READ_WRITE 0x02
+#define REGISTER_SELECT 0x01
+
+void lcd_init(void);
+void lcd_send_cmd(char cmd);
+void lcd_send_data(char data);
+void lcd_send_string(char *str);
+void lcd_put_cur(int row, int col);
+void lcd_clear(void);
+void lcd_backlight_on(void);
+void lcd_backlight_off(void);
+
+#endif /* INC_I2C_LCD_H_ */
+
+#endif /* INC_I2C_LCD_H_ */
